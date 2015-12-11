@@ -7,7 +7,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "test": "mocha -R list"
+    "test": "make test"
   },
   "repository": {
     "type": "git",
