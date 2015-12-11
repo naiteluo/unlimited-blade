@@ -2,7 +2,7 @@
 var server = require('../test-server/server');
 var port = server.config.port;
 
-var assert = require('assert');
+var expect = require('expect.js');
 var ub = require('../src/index');
 var request = require('request');
 
@@ -14,8 +14,8 @@ describe('Basic', function() {
           if (err) {
               done(err);
           }
-          assert.equal(response.statusCode, 200);
-          assert.equal(body, 'Hello World!');
+          expect(response.statusCode).to.eql(200);
+          expect(body).to.eql(body, 'Hello Wo2d!');
           done();
       });
     });
@@ -23,8 +23,8 @@ describe('Basic', function() {
 
   describe('load src index', function() {
     it('should exports version', function() {
-      assert.equal(ub.version, '1.0.0');
+      expect(ub.version).to.eql('1.0.0');
     });
   });
-  
+
 });
