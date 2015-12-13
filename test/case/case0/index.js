@@ -9,7 +9,6 @@ var config = {
 // run test server
 var server = require('../../../test-server/server');
 var port = server.config.port;
-var request = require('request');
 
 describe('case0', function () {
   describe('normal', function () {

@@ -4,7 +4,6 @@ var server = require('../../../test-server/server');
 var port = server.config.port;
 
 var ub = require('../../../src/index');
-var request = require('request');
 
 describe('open api /user', function () {
   describe('normal', function () {
@@ -13,10 +12,15 @@ describe('open api /user', function () {
         if (err) {
             done(err);
         }
+        // TODO auto check type and parse response body
         var data = JSON.parse(body);
+        // check response statusCode
         expect(response.statusCode).to.eql(200);
+        // check keys
         expect(data).to.have.key('name', 'age');
+        // check value type
         expect(data.age).to.be.a('number');
+        expect(data.age).not.to.be.a('string');
         done();
       });
     });
