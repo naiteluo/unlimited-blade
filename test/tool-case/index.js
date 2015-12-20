@@ -1,9 +1,9 @@
 // run test server
-var server = require('../test-server/server');
+var server = require('../../test-server/server');
 var port = server.config.port;
 
 var expect = require('expect.js');
-var ub = require('../src/index');
+var ub = require('../../src/index');
 var request = require('request');
 
 describe('Basic', function() {
