@@ -10,18 +10,19 @@ function UbReporter(runner) {
 
   runner.on('pass', function(test){
     passes++;
-    // console.log('----------pass: %s', test.fullTitle());
+    console.log('pass: %s', test.fullTitle());
   });
 
   runner.on('fail', function(test, err){
     failures++;
-    // console.log('------fail: %s -- error: %s', test.fullTitle(), err.message);
+    console.log('fail: %s -- error: %s', test.fullTitle(), err.message);
+    console.log(err);
   });
 
   runner.on('end', function(){
-    // console.log('end: %d/%d', passes, passes + failures);
+    console.log('end: %d/%d', passes, passes + failures);
     // TODO comment this to show test report in it's test
-    // process.exit(failures);
+    process.exit(failures);
   });
 
 }
