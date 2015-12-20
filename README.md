@@ -8,5 +8,5 @@
 
 ## References
 
-[What is Mocha?](https://mochajs.org/)
-[Using mocha programmatically](https://github.com/mochajs/mocha/wiki/Using-mocha-programmatically)
+- [What is Mocha?](https://mochajs.org/)
+- [Using mocha programmatically](https://github.com/mochajs/mocha/wiki/Using-mocha-programmatically)

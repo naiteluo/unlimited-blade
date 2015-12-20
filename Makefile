@@ -1,7 +1,9 @@
 all:
 	@node index.js
 test:
-	@mocha ./test/*.js -R list
+	@mocha ./test/tool-case/*.js -R list
 run-server:
 	@DEBUG=express:* node ./test-server/server.js
-.PHONY: all test run-server
+run-ub:
+	@node ./test/dev-case/exec-ub.js
+.PHONY: all test run-server run-ub
