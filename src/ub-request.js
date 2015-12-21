@@ -23,6 +23,10 @@ function Request (configs) {
   this.configs = configs || {};
 }
 
+request.debug = function (flag) {
+  r.debug = !!flag;
+};
+
 Request.prototype.send = function () {
   var done = false;
   var that = this;
@@ -31,11 +35,37 @@ Request.prototype.send = function () {
     response: {},
     output: null
   };
-  r({
-    method: this.configs.method || 'GET',
-    uri: this.configs.uri,
-    qs: this.configs.params
-  }, function (err, res, body) {
+
+  var requestConfig = {
+    method: this.configs.method || 'GET'
+  };
+  if (this.configs.url) {
+    requestConfig.url = this.configs.url;
+  }
+  if (this.configs.uri) {
+    requestConfig.uri = this.configs.uri;
+  }
+  if (this.configs.params) {
+    requestConfig.qs = this.configs.params;
+  }
+  if (this.configs.headers) {
+    requestConfig.headers = this.configs.headers;
+  }
+
+  // TODO 文档上使用的是这种cookie的设置方法，但是设置完并没有带上登录状态，why
+  // if (_.isObject(this.configs.cookie)) {
+  //   var j = r.jar();
+  //   var cookieUrl = this.configs.url || this.configs.uri;
+  //   var cookie = this.configs.cookie
+  //   for (var key in cookie) {
+  //     if (cookie.hasOwnProperty(key)) {
+  //       j.setCookie(r.cookie(key + '=' + cookie[key]));
+  //     }
+  //   }
+  //   requestConfig.jar = j;
+  // }
+
+  r(requestConfig, function (err, res, body) {
     data.error = err;
     data.response = res;
     data.output = body;
@@ -82,3 +112,14 @@ request.get = function (option) {
 request.post = function (options) {
 
 };
+
+request.createCookie = function (cookie) {
+  var arr = [];
+  var str = '';
+  for (var key in cookie) {
+    if (cookie.hasOwnProperty(key)) {
+      arr.push(key + '=' + cookie[key]);
+    }
+  }
+  return arr.join('; ');
+}

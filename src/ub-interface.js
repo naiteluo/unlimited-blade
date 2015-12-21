@@ -1,6 +1,7 @@
 var expect = require('./ub-expect');
 var request = require('./ub-request');
 var diff = require('./ub-diff');
+var ubUtil = require('./ub-util');
 
 /**
  * expose methods to Mocha case enviroment
@@ -35,6 +36,9 @@ function expose (Ub) {
       context.expect = expect;
       context.request = request;
       context.diff = diff;
+      context.ubTools = ubUtil.ubTools;
+      // expose underscore to context for user
+      context._ = ubUtil.underscore;
     });
   };
 
