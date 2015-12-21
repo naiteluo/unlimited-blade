@@ -55,55 +55,5 @@ describe('测试接口', function () {
       var outputOffline = dataOffline.output;
     });
 
-    it.skip('frs should pass diff', function () {
-
-      var params = {
-        _client_type: "2",
-        _client_version: "99.9.9",
-        ka: "open",
-        kw: "牛劈叉",
-        m_api: "%2Fc%2Fs%2Fmsg",
-        m_size_d: "471",
-        m_size_u: "1194",
-        net_type: "3",
-        pn: "1",
-        q_type: "100",
-        rn: "90",
-        rn_need: "30",
-        scr_h: "960",
-        scr_w: "640",
-        sign: "123456tbclient654321",
-        with_group: "1"
-      };
-
-      var config = {
-        type: 'POST',
-        params: _.clone(params),
-        timeout: 2000
-      };
-
-      // TODO 用此方法可以实现增量diff，通过查看diff的patch来判断新上线是否符合预期
-      var requestConfigOnline = _.extend(config, {
-        uri: 'http://c.tieba.baidu.com/c/f/frs/page'
-      });
-      var requestConfigOffline =  _.extend(config, {
-        uri: 'http://fes6.tieba.baidu.com/c/f/frs/page'
-      });
-
-      var dataOnline = request(requestConfigOnline);
-      var outputOnline = dataOnline.output;
-
-      var dataOffline = request(requestConfigOffline);
-      var outputOffline = dataOffline.output;
-
-      var diffResult = diff.diffJson(outputOffline, outputOnline, {
-        ignore: [
-          'app','tbs', 'server_time', 'time', 'logid'
-        ]
-      });
-      // console.log('abc');
-      expect(diffResult).to.be({});
-    });
-
   });
 });

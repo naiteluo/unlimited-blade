@@ -10,6 +10,7 @@ var ub = new Ub({
 });
 
 ub.addFile('test/case-case/case0');
+ub.addFile('test/case-case/frs-diff');
 ub.addFile('test/case-case/test-open-api');
 // Run the tests.
 ub.ubRun(function(failures){
