@@ -1,0 +1,202 @@
+#!/usr/bin/env node
+
+var Ub = require('../src');
+var ub = new Ub;
+var utils = Ub.utils;
+var program = require('commander');
+var fs = require('fs');
+var path = require('path');
+var resolve = path.resolve;
+var exists = fs.existsSync || path.existsSync;
+
+/**
+ * Files.
+ */
+
+var files = [];
+
+/**
+ * Requires.
+ */
+
+var requires = [];
+
+program
+  .version(JSON.parse(fs.readFileSync(__dirname + '/../package.json', 'utf8')).version)
+  .usage('[debug] [options] [files]')
+  .option('-g, --grep <pattern>', 'only run tests matching <pattern>')
+  .option('-f, --fgrep <string>', 'only run tests containing <string>')
+  .option('-w, --watch', 'watch files for changes')
+  .option('-S, --sort', "sort test files")
+  .option('-t, --timeout <ms>', 'set test-case timeout in milliseconds [2000]')
+  .option('--no-timeouts', 'disables timeouts, given implicitly with --debug')
+  .option('--recursive', 'include sub directories')
+  .option('--inline-diffs', 'display actual/expected differences inline within each string');
+
+program.name = 'ub';
+program.reporter = 'mochawesome';
+program.ui = 'ub-expect';
+
+// TODO add init command to setup case
+program
+  .command('init <path>')
+  .description('initialize a client-side mocha setup at <path>')
+  .action(function(path) {
+    process.exit(0);
+  });
+
+program.parse(process.argv);
+
+ub.reporter(program.reporter);
+
+ub.ui(program.ui);
+
+// load reporter
+
+try {
+  Reporter = require('../lib/reporters/' + program.reporter);
+} catch (err) {
+  try {
+    Reporter = require(program.reporter);
+  } catch (err) {
+    throw new Error('reporter "' + program.reporter + '" does not exist');
+  }
+}
+
+// --inline-diffs
+
+if (program.inlineDiffs) ub.useInlineDiffs(true);
+
+// --no-timeouts
+
+if (!program.timeouts) ub.enableTimeouts(false);
+
+// --timeout
+
+if (program.timeout) ub.suite.timeout(program.timeout);
+
+// --grep
+
+if (program.grep) ub.grep(new RegExp(program.grep));
+
+// --fgrep
+
+if (program.fgrep) ub.grep(program.fgrep);
+
+//args
+
+var args = program.args;
+
+var extensions = ['js'];
+
+// default files to test/*.{js,coffee}
+
+if (!args.length) args.push('test/**/index.js');
+
+args.forEach(function(arg) {
+  files = files.concat(utils.lookupFiles(arg, extensions, program.recursive));
+});
+
+// resolve
+
+files = files.map(function(path) {
+  return resolve(path);
+});
+
+if (program.sort) {
+  files.sort();
+}
+
+// debug
+console.log(files);
+console.log();
+
+var runner;
+
+// -watch
+if (program.watch) {
+
+} else {
+  ub.files = files;
+  runner = ub.ubRun(program.exit ? exit : exitLater);
+}
+
+function exitLater(code) {
+  process.on('exit', function() { process.exit(code) })
+}
+
+function exit(code) {
+  // flush output for Node.js Windows pipe bug
+  // https://github.com/joyent/node/issues/6247 is just one bug example
+  // https://github.com/visionmedia/mocha/issues/333 has a good discussion
+  function done() {
+    if (!(draining--)) process.exit(code);
+  }
+
+  var draining = 0;
+  var streams = [process.stdout, process.stderr];
+
+  streams.forEach(function(stream){
+    // submit empty write request and wait for completion
+    draining += 1;
+    stream.write('', done);
+  });
+
+  done();
+}
+
+// TODO run a web serer to show result
+// ub.webapp();
+
+process.on('SIGINT', function() {
+    runner.abort();
+    process.exit(0)
+});
+
+/**
+ * Parse list.
+ */
+
+function list(str) {
+  return str.split(/ *, */);
+}
+
+/**
+ * Hide the cursor.
+ */
+
+function hideCursor() {
+  process.stdout.write('\u001b[?25l');
+}
+
+/**
+ * Show the cursor.
+ */
+
+function showCursor() {
+  process.stdout.write('\u001b[?25h');
+}
+
+/**
+ * Stop play()ing.
+ */
+
+function stop() {
+  process.stdout.write('\u001b[2K');
+  clearInterval(play.timer);
+}
+
+/**
+ * Play the given array of strings.
+ */
+
+function play(arr, interval) {
+  var len = arr.length,
+    interval = interval || 100,
+    i = 0;
+
+  play.timer = setInterval(function() {
+    var str = arr[i++ % len];
+    process.stdout.write('\u001b[0G' + str);
+  }, interval);
+}

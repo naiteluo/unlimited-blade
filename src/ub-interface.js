@@ -19,6 +19,7 @@ function expose (Ub) {
     var runner = this.run(fn);
     request.setRunner(runner);
     expect.setRunner(runner);
+    return runner;
   };
 
   /**

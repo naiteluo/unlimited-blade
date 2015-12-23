@@ -22,7 +22,7 @@ function EmptyReporter(runner) {
   runner.on('end', function(){
     // console.log('end: %d/%d', passes, passes + failures);
     // TODO comment this to show test report in it's test
-    // process.exit(failures);
+    process.exit(failures);
   });
 
 }
